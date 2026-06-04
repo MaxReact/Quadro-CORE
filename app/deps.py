@@ -5,7 +5,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
 from app.db import SessionLocal
-from app.models import Product, Project, Segment, User
+from app.models import Product, Project, ProjectDocument, Segment, User
 from app.security import decode_access_token
 
 _bearer = HTTPBearer()
@@ -75,3 +75,17 @@ def get_owned_product(
     if project is None or project.owner_id != current_user.id:
         raise _404
     return product
+
+
+def get_owned_document(
+    document_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> ProjectDocument:
+    doc = db.get(ProjectDocument, document_id)
+    if doc is None:
+        raise _404
+    project = db.get(Project, doc.project_id)
+    if project is None or project.owner_id != current_user.id:
+        raise _404
+    return doc

@@ -3,7 +3,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from app.models import ProjectStatus
+from app.models import DocType, ProjectStatus, SourceFormat
 
 
 # --- Auth ---
@@ -97,3 +97,21 @@ class ProductRead(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+# --- Documents ---
+
+class DocumentMeta(BaseModel):
+    id: int
+    project_id: int
+    doc_type: DocType
+    title: Optional[str]
+    original_filename: Optional[str]
+    source_format: Optional[SourceFormat]
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class DocumentRead(DocumentMeta):
+    extracted_text: Optional[str]
